@@ -1,0 +1,195 @@
+#+TITLE: How To Write Nice Looking Presentation With Beamer And Org-Mode
+#+AUTHOR: Evgeniy T
+#+EMAIL:
+#+DATE: 2018
+
+#+LATEX_CLASS: beamer
+#+LATEX_CLASS_OPTIONS: [10pt, presentation, colorlinks]
+#+OPTIONS: toc:nil H:1 num:t
+#+COLUMNS: %45ITEM %10BEAMER_ENV(Env) %10BEAMER_ACT(Act) %4BEAMER_COL(Col) %8BEAMER_OPT(Opt)
+
+# #+LATEX_HEADER: \usepackage{xcolor} % for colors definitions
+
+#+LATEX_HEADER: % settings for code hightliting
+#+LATEX_HEADER: \definecolor{back}{RGB}{250,250,250}  % should match to bg color
+#+LATEX_HEADER: \definecolor{keywords}{RGB}{255,0,90}
+#+LATEX_HEADER: \definecolor{comments}{RGB}{60,179,113}
+#+LATEX_HEADER: \usepackage{listings} % code hightliting package (required `fragile` for frame )
+#+LATEX_HEADER: \lstset{language=Scala, columns=fixed,basicstyle=\normalsize\ttfamily, morekeywords={Option, ClassTag}, keywordstyle=\color{keywords}, backgroundcolor=\color{back}, keepspaces=true, stringstyle=\color{comments}, commentstyle=\color{comments}\emph}
+
+#+LATEX_HEADER: % colors and commands for tables
+#+LATEX_HEADER: \definecolor{coolGreen}{HTML}{096c31}
+#+LATEX_HEADER: \newcommand{\clm}[1]{\textcolor{coolGreen}{\rotatebox{90}{\textbf{\large #1}}}}
+#+LATEX_HEADER: \newcommand{\row}[1]{\textbf{\large #1}}
+
+#+BEAMER_THEME: metropolis[titleformat=smallcaps, sectionpage=simple,numbering=counter, progressbar=frametitle]
+#+BEAMER_HEADER: % metropolis fonts set up
+#+BEAMER_HEADER: \setsansfont[ItalicFont={Fira Sans Italic},BoldItalicFont={Fira Sans Bold Italic}, BoldFont={Fira Sans Bold}]{Fira Sans Regular}
+#+BEAMER_HEADER: \setmonofont{Iosevka SS08 Semibold}
+
+# #+BEAMER_HEADER: % Workaround(xelatex) for Notes on second screen with Metropolis theme (bug at Beamer)
+# #+BEAMER_HEADER: \makeatletter
+# #+BEAMER_HEADER: \def\beamer@framenotesbegin{% at beginning of slide
+# #+BEAMER_HEADER:   \usebeamercolor[fg]{normal text}
+# #+BEAMER_HEADER:   \gdef\beamer@noteitems{}%
+# #+BEAMER_HEADER:   \gdef\beamer@notes{}%
+# #+BEAMER_HEADER: }
+# #+BEAMER_HEADER: \makeatother
+
+#+BEAMER_HEADER: % Use notes with PDFPC or with Dspdfviewer
+#+BEAMER_HEADER: \usepackage{pgfpages}
+#+BEAMER_HEADER: \setbeameroption{show notes on second screen=right}
+#+BEAMER_HEADER: % As workaround for notes on second screen with Metropolis theme (bug at Beamer) use Lualatex
+
+#+BEAMER_HEADER: % customize links color
+#+BEAMER_HEADER: \definecolor{links}{HTML}{0061A4}
+#+BEAMER_HEADER: \hypersetup{colorlinks,linkcolor=,urlcolor=links}
+
+#+LATEX_COMPILER: lualatex
+
+#+startup: beamer
+
+# Presentation mode via Epresent
+#+EPRESENT_FRAME_LEVEL: 1
+
+* Links
+
+** tutorial: https://orgmode.org/worg/exporters/beamer/tutorial.html
+
+** beamer export: https://orgmode.org/manual/Beamer-export.html
+
+** latex export: https://orgmode.org/manual/LaTeX-export.html#LaTeX-export
+
+** Theme https://github.com/matze/mtheme  or  https://github.com/rchurchley/beamercolortheme-owl
+
+** Cheat Sheet  https://github.com/fniessen/refcard-org-beamer
+
+** Note
+ :PROPERTIES:
+ :BEAMER_ENV: note
+ :END:
+
+Use it for store speaker notes with advanced PDF viewers such as PDFPC https://pdfpc.github.io/
+(see: https://tex.stackexchange.com/questions/84622/is-there-a-specialized-pdf-viewer-for-latex-beamer-presentations-on-linux)
+
+
+* Code Block Without Highlighting
+
+Just text.
+
+#+begin_src scala
+val test = 1 + 5
+println(test.toString)
+#+end_src
+
+** Note
+ :PROPERTIES:
+ :BEAMER_ENV: note
+ :END:
+
+Just note example
+
+* Code Block With Highlighting
+ :PROPERTIES:
+ :BEAMER_OPT: fragile
+ :END:
+
+# properties with :BEAMER_OPT: fragile required to allow {lstlisting} works
+
+** use latex export block with the "lstlisting" package:
+- Tutorial: https://mikedewar.wordpress.com/2009/02/25/latex-beamer-python-beauty/
+- docs: https://en.wikibooks.org/wiki/LaTeX/Source_Code_Listings
+
+#+begin_export LaTeX
+
+\begin{lstlisting}
+// simple code example
+def parseOpt[A: ClassTag](a: Any): Option[A] =
+  a match {
+    case a: A => Some(a)
+    case _ => None
+  }
+}
+
+def xxx[A](a: Int) = "000"
+\end{lstlisting}
+
+#+end_export
+
+* Standout
+:PROPERTIES:
+:BEAMER_OPT: label=, standout
+:END:
+  + pure *FP*
+  + composition
+  + streaming
+
+* Table
+
+#+LATEX: \def\arraystretch{1.4} % height of the row
+#+ATTR_LATEX: :align |c|c|c|c| :font \large
+|---------+------------+---------------------+------------------------------|
+| \clm{a} | \clm{name} | \clm{long name}     | \clm{other}                  |
+|---------+------------+---------------------+------------------------------|
+| \row{b} | V          | 0                   | Lorem ipsum met              |
+|---------+------------+---------------------+------------------------------|
+| \row{c} | 0          | Excepteur cupidatat | Ut minim, quis  exercitation |
+|         |            |                     |                              |
+|---------+------------+---------------------+------------------------------|
+
+
+* Columns Blocks
+
+/_*Just Text*_/
+
+*** TODO
+    :PROPERTIES:
+    :BEAMER_col: 0.45
+    :BEAMER_env: block
+    :END:
+ #+begin_src scala :tangle yes
+  sealed trait MarkStyle
+  case class PointStyle(
+    color: Color,
+    borderColor: Color,
+    bolderWidth: Double,
+    radius: Double,
+    shape: PointShape
+  ) extends MarkStyle
+ #+end_src
+
+*** TODO
+    :PROPERTIES:
+    :BEAMER_col: 0.45
+    :BEAMER_env: block
+    :END:
+ #+begin_src scala :tangle yes
+  case class FontStyle(
+     name: String,
+     weight: FontWeight,
+     size: Double,
+     color: Color
+   ) extends MarkStyle
+ #+end_src
+
+
+* Image
+#+ATTR_LATEX: :height 3cm
+[[./img/algebra-scales.png]]
+
+* Ditaa
+
+ #+BEGIN_SRC ditaa :file ./img/ditaa-sample.png
+
++-----------------+
+| RangeFn(0, 100) |
++-----------------+
+
++-----------------+
+| MeanFn()        |
++-----------------+
+
+ #+END_SRC
+ #+ATTR_LATEX: :width 7cm
+ #+results:
+ [[file:./img/ditaa-sample.png]]
